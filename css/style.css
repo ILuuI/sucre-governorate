@@ -1,0 +1,529 @@
+/* ==========================================================================
+   ESCALA SUCRE — Guía local de deporte, turismo y gastronomía
+   Sistema de diseño: identidad "Sucre, Tierra de Oportunidades"
+   - Fondo crema cálido + 5 acentos tomados del logotipo departamental
+   - Elemento firma: los "bloques pinwheel" (cuadros diagonales de la portada)
+   - Tipografía redondeada y festiva: Baloo 2 (display) + Nunito Sans (cuerpo)
+   - Mobile-first, con mejoras progresivas en tablet/desktop
+   ========================================================================== */
+
+:root {
+  /* ---- Color: base crema (portada del Plan de Desarrollo) ---- */
+  --cream: #FBF5E6;
+  --cream-alt: #F3EAD4;
+  --card: #FFFFFF;
+  --ink: #26201A;
+  --ink-dim: #6B6153;
+  --line: rgba(38, 32, 26, 0.12);
+  --line-strong: rgba(38, 32, 26, 0.22);
+
+  /* ---- Color: acentos tomados del logotipo "SUCRE" y la portada ---- */
+  --sol: #EF9A2E;      /* naranja — bloques / letra S */
+  --sol-ink: #7A3E0A;
+  --mar: #2679BE;      /* azul — cielo, mar, letra U */
+  --mar-ink: #0E3A5C;
+  --monte: #3C8A45;    /* verde — palma, bloques */
+  --monte-ink: #16401C;
+  --terracota: #C6532E; /* rojo-teja — traje folclórico, letra C */
+  --terracota-ink: #6E2A14;
+  --amarillo: #F2C230; /* amarillo — acento pequeño */
+
+  --cat-deporte: var(--sol);
+  --cat-turismo: var(--mar);
+  --cat-comida: var(--terracota);
+
+  /* acento de zona activa — lo fija main.js según la zona */
+  --zone-accent: var(--sol);
+  --zone-accent-ink: var(--sol-ink);
+
+  /* ---- Tipografía ---- */
+  --font-display: "Baloo 2", "Nunito Sans", sans-serif;
+  --font-body: "Nunito Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  /* ---- Escala ---- */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
+  --gap: clamp(1rem, 2vw, 1.5rem);
+  --max-width: 1180px;
+
+  --shadow-card: 0 14px 34px rgba(38, 32, 26, 0.10);
+  --shadow-pop: 0 20px 44px rgba(38, 32, 26, 0.16);
+}
+
+/* ---- Reset básico ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+ul { list-style: none; margin: 0; padding: 0; }
+button { font: inherit; }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+
+.wrap {
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.1rem, 4vw, 2.5rem);
+}
+.wrap--narrow { max-width: 720px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: 1rem; top: -3rem;
+  background: var(--ink); color: var(--cream);
+  padding: 0.6rem 1rem; border-radius: var(--radius-sm);
+  font-weight: 700; z-index: 200; transition: top 0.2s ease;
+}
+.skip-link:focus { top: 1rem; }
+
+/* Foco visible consistente */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--mar);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Bloques pinwheel — elemento firma, tomado de los cuadros diagonales
+   de la portada del Plan de Desarrollo. Cuatro cuadros de color en
+   escalera, reutilizados en logo, secciones y footer.
+   ========================================================================== */
+.pinwheel {
+  --pw-size: 10px;
+  position: relative;
+  width: calc(var(--pw-size) * 3.6);
+  height: calc(var(--pw-size) * 3.6);
+  flex: none;
+}
+.pinwheel span {
+  position: absolute;
+  width: var(--pw-size);
+  height: var(--pw-size);
+  border-radius: 3px;
+}
+.pinwheel span:nth-child(1) { background: var(--sol);      top: 0;                          left: calc(var(--pw-size) * 1.3); }
+.pinwheel span:nth-child(2) { background: var(--terracota); top: calc(var(--pw-size) * 1.3); left: calc(var(--pw-size) * 1.3); }
+.pinwheel span:nth-child(3) { background: var(--monte);    top: calc(var(--pw-size) * 1.3); left: 0; }
+.pinwheel span:nth-child(4) { background: var(--mar);      top: calc(var(--pw-size) * 2.6); left: calc(var(--pw-size) * 2.6); }
+.pinwheel--lg { --pw-size: 16px; }
+
+/* ==========================================================================
+   Botones y chips
+   ========================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 800; font-size: 0.95rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.btn--accent { background: var(--zone-accent); color: #fff; box-shadow: 0 8px 20px rgba(38,32,26,0.18); }
+.btn--accent:hover { transform: translateY(-2px); }
+.btn--outline { background: transparent; border-color: var(--ink); color: var(--ink); }
+.btn--outline:hover { background: var(--ink); color: var(--cream); }
+.btn--ghost { background: var(--card); border: 2px solid var(--line); color: var(--ink-dim); }
+.btn--ghost:hover { color: var(--ink); border-color: var(--line-strong); }
+.btn--sm { padding: 0.5rem 1.1rem; font-size: 0.85rem; }
+.btn--map { background: var(--mar); color: #fff; }
+.btn--map:hover { transform: translateY(-2px); }
+.btn--block { width: 100%; }
+
+.link-btn {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--mar); text-decoration: underline; text-underline-offset: 3px;
+  font-weight: 700; font-size: inherit;
+}
+
+.chip {
+  background: var(--card);
+  border: 2px solid var(--line);
+  color: var(--ink-dim);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip.is-active { color: #fff; background: var(--ink); border-color: var(--ink); }
+.chip--accent { border-color: var(--mar); color: var(--mar); }
+.chip--accent.is-active { background: var(--mar); color: #fff; border-color: var(--mar); }
+
+.filter-bar {
+  display: flex; gap: 0.6rem; flex-wrap: wrap;
+  margin-block: 1.4rem 1.6rem;
+}
+
+.icon-btn {
+  background: var(--card); border: 2px solid var(--line);
+  color: var(--ink); width: 2.3rem; height: 2.3rem;
+  border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(251, 245, 230, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--line);
+}
+.site-header__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-block: 0.9rem;
+}
+.brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
+.brand__name {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.3rem;
+  letter-spacing: -0.01em;
+}
+.brand__name span:nth-child(1) { color: var(--mar); }
+.brand__name span:nth-child(2) { color: var(--sol); }
+.brand__name span:nth-child(3) { color: var(--terracota); }
+.brand__name span:nth-child(4) { color: var(--monte); }
+.brand__sub { display: block; font-family: var(--font-body); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); }
+
+.nav-toggle {
+  background: var(--card); border: 2px solid var(--line); border-radius: var(--radius-sm);
+  width: 2.6rem; height: 2.6rem; display: flex; align-items: center; justify-content: center;
+  color: var(--ink); cursor: pointer;
+}
+.nav-toggle__bar,
+.nav-toggle__bar::before,
+.nav-toggle__bar::after {
+  content: ""; display: block; width: 1.1rem; height: 2px; background: var(--ink); border-radius: 2px;
+  position: relative; transition: transform 0.2s ease;
+}
+.nav-toggle__bar::before { position: absolute; top: -6px; width: 1.1rem; background: var(--ink); }
+.nav-toggle__bar::after { position: absolute; top: 6px; width: 1.1rem; background: var(--ink); }
+
+.site-nav {
+  display: none;
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--cream-alt); border-bottom: 2px solid var(--line);
+  flex-direction: column; padding: 1rem clamp(1.1rem, 4vw, 2.5rem) 1.4rem;
+  gap: 0.9rem;
+}
+.site-nav.is-open { display: flex; }
+.site-nav a { text-decoration: none; color: var(--ink); font-weight: 700; }
+.site-nav a:hover { color: var(--mar); }
+
+@media (min-width: 860px) {
+  .nav-toggle { display: none; }
+  .site-nav {
+    display: flex; position: static; flex-direction: row; align-items: center;
+    background: none; border: none; padding: 0; gap: 1.6rem;
+  }
+}
+
+/* ==========================================================================
+   Banner de detección GPS
+   ========================================================================== */
+.geo-banner {
+  background: var(--mar); color: #fff;
+  font-size: 0.85rem; font-weight: 700;
+  text-align: center; padding: 0.55rem 1rem;
+}
+.geo-banner[hidden] { display: none; }
+
+/* ==========================================================================
+   Hero — tarjeta "cover" inspirada en la portada del plan de desarrollo
+   ========================================================================== */
+.hero { padding-block: clamp(1.6rem, 4vw, 3rem) clamp(2rem, 5vw, 3.5rem); }
+
+.cover-card {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) {
+  .cover-card { grid-template-columns: 1.05fr 1fr; min-height: 460px; }
+}
+
+.cover-card__photo {
+  position: relative;
+  min-height: 220px;
+  background: var(--cream-alt);
+}
+.cover-card__photo img {
+  width: 100%; height: 100%; object-fit: cover;
+  min-height: 220px;
+}
+@media (min-width: 860px) {
+  .cover-card__photo img { position: absolute; inset: 0; height: 100%; }
+}
+.cover-card__credit {
+  position: absolute; left: 0.9rem; bottom: 0.9rem;
+  background: rgba(38, 32, 26, 0.62); color: #fff;
+  font-size: 0.68rem; padding: 0.3rem 0.6rem; border-radius: 999px;
+  max-width: calc(100% - 1.8rem);
+}
+.cover-card__fallback {
+  width: 100%; height: 100%; min-height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--zone-accent), var(--sol));
+}
+
+.cover-card__body {
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  display: flex; flex-direction: column;
+}
+.cover-card__top {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem;
+  color: var(--zone-accent-ink); font-weight: 800;
+}
+.hero__code {
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-dim);
+  border: 2px dashed var(--line-strong); padding: 0.3rem 0.6rem; border-radius: 999px;
+}
+
+.hero__apodo { color: var(--zone-accent); font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem; }
+.hero__title {
+  font-size: clamp(2rem, 4.6vw, 2.9rem);
+  line-height: 1.05;
+}
+.hero__title-accent { display: block; color: var(--zone-accent); margin-top: 0.3rem; }
+
+.hero__lede { color: var(--ink-dim); font-size: 1.02rem; margin: 1.1rem 0 0; max-width: 52ch; }
+
+.hero__divider {
+  position: relative;
+  height: 1px;
+  background-image: repeating-linear-gradient(90deg, var(--line-strong) 0 10px, transparent 10px 20px);
+  margin: 1.5rem 0;
+}
+
+.hero__actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: auto; padding-top: 1rem; }
+.hero__hint { margin-top: 1.1rem; font-size: 0.85rem; color: var(--ink-dim); }
+
+/* ==========================================================================
+   Selector de destino (modal)
+   ========================================================================== */
+.zone-switcher {
+  position: fixed; inset: 0; z-index: 300;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.zone-switcher[hidden] { display: none; }
+.zone-switcher__backdrop {
+  position: absolute; inset: 0; background: rgba(38, 32, 26, 0.55);
+}
+.zone-switcher__panel {
+  position: relative; z-index: 1;
+  background: var(--cream);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%; max-width: 640px;
+  padding: 1.6rem clamp(1.2rem, 4vw, 2rem) 2rem;
+  max-height: 86vh; overflow-y: auto;
+}
+@media (min-width: 640px) {
+  .zone-switcher { align-items: center; }
+  .zone-switcher__panel { border-radius: var(--radius-lg); }
+}
+.zone-switcher__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; gap: 0.8rem; }
+.zone-switcher__note { color: var(--ink-dim); font-size: 0.9rem; margin: 0 0 1.2rem; }
+.zone-switcher__geo {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+  background: var(--cream-alt); border-radius: var(--radius-md);
+  padding: 0.8rem 1rem; margin-bottom: 1.2rem;
+}
+.zone-switcher__geo p { margin: 0; font-size: 0.85rem; color: var(--ink-dim); }
+.zone-switcher__list { display: grid; gap: 0.8rem; }
+
+.zone-card {
+  display: flex; align-items: center; gap: 0.9rem;
+  width: 100%; text-align: left;
+  background: var(--card); border: 2px solid var(--line);
+  border-radius: var(--radius-md); padding: 0.9rem 1.1rem;
+  cursor: pointer; color: var(--ink);
+}
+.zone-card:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.zone-card__swatch { width: 0.6rem; align-self: stretch; border-radius: 999px; flex: none; }
+.zone-card__body { flex: 1; }
+.zone-card__name { font-weight: 800; font-family: var(--font-display); font-size: 1.05rem; }
+.zone-card__desc { color: var(--ink-dim); font-size: 0.86rem; margin-top: 0.2rem; }
+
+/* ==========================================================================
+   Secciones genéricas
+   ========================================================================== */
+.section { padding-block: clamp(2.4rem, 5vw, 4rem); }
+.section--tight { padding-block: 1.6rem 0.4rem; }
+.section--alt { background: var(--cream-alt); }
+
+.section__head { max-width: 62ch; margin-bottom: 0.4rem; display: flex; align-items: flex-start; gap: 0.8rem; flex-wrap: wrap; }
+.section__head-text { flex: 1; min-width: 200px; }
+.section__title { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-top: 0.5rem; }
+.section__lede { color: var(--ink-dim); margin: 0.6rem 0 0; }
+
+.cat-badge {
+  display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.1em; font-weight: 800; padding: 0.35rem 0.8rem;
+  border-radius: 999px; color: #fff;
+}
+.cat-badge--deporte { background: var(--cat-deporte); }
+.cat-badge--turismo { background: var(--cat-turismo); }
+.cat-badge--comida { background: var(--cat-comida); }
+
+/* ==========================================================================
+   Tarjetas (card-grid)
+   ========================================================================== */
+.card-grid {
+  display: grid; gap: 1.1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.3rem 1.3rem;
+  display: flex; flex-direction: column; gap: 0.55rem;
+  border-top: 5px solid var(--line-strong);
+}
+
+.card--deporte { border-top-color: var(--cat-deporte); }
+.card--turismo { border-top-color: var(--cat-turismo); }
+.card--comida { border-top-color: var(--cat-comida); }
+
+.card__top-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+.card__title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
+.card__desc { color: var(--ink-dim); font-size: 0.92rem; }
+.card__nota { color: var(--ink-dim); font-size: 0.78rem; font-style: italic; }
+.card__meta {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem;
+  font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-dim);
+  border-top: 2px dashed var(--line); padding-top: 0.6rem; margin-top: auto;
+}
+.card__meta strong { color: var(--ink); font-weight: 700; }
+.card__tag {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--sol-ink);
+}
+.card__badge-highlight {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
+  font-weight: 800; color: #fff; background: var(--sol);
+  padding: 0.25rem 0.6rem; border-radius: 999px;
+}
+.card__distance {
+  font-family: var(--font-mono); font-size: 0.8rem; color: var(--monte);
+}
+.card__route {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin-top: 0.3rem;
+  background: var(--mar); color: #fff;
+  font-weight: 800; font-size: 0.82rem;
+  padding: 0.55rem 0.9rem; border-radius: 999px;
+  text-decoration: none; width: fit-content;
+}
+.card__route:hover { transform: translateY(-1px); }
+
+/* ==========================================================================
+   Planes de hoy (scroller horizontal)
+   ========================================================================== */
+.exp-scroller {
+  display: flex; gap: 1rem; overflow-x: auto; padding: 0.4rem 0 0.6rem;
+  scroll-snap-type: x proximity;
+  margin-inline: calc(-1 * clamp(1.1rem, 4vw, 2.5rem));
+  padding-inline: clamp(1.1rem, 4vw, 2.5rem);
+}
+.exp-card {
+  scroll-snap-align: start;
+  flex: 0 0 auto; width: min(78vw, 320px);
+  background: var(--card); border: 2px solid var(--line);
+  border-radius: var(--radius-md); padding: 1.1rem 1.2rem;
+  border-left: 5px solid var(--zone-accent);
+}
+.exp-card__title { font-family: var(--font-display); font-weight: 700; margin-bottom: 0.4rem; }
+.exp-card__detail { color: var(--ink-dim); font-size: 0.9rem; }
+
+/* ==========================================================================
+   Geolocalización — mensajes de estado
+   ========================================================================== */
+.geo-status {
+  font-size: 0.85rem; color: var(--ink-dim); font-family: var(--font-mono);
+  min-height: 1.2em; margin: -0.6rem 0 0.8rem;
+}
+.geo-status[data-state="denied"] { color: var(--terracota); }
+.geo-status[data-state="ok"] { color: var(--monte); }
+
+/* ==========================================================================
+   Mapa
+   ========================================================================== */
+.map-frame {
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 2px solid var(--line-strong);
+}
+#map { width: 100%; height: 420px; background: var(--cream-alt); }
+@media (min-width: 860px) { #map { height: 520px; } }
+
+.map-marker-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(38,32,26,0.25);
+}
+.map-marker-dot--deporte { background: var(--cat-deporte); }
+.map-marker-dot--turismo { background: var(--cat-turismo); }
+.map-marker-dot--comida { background: var(--cat-comida); }
+.map-marker-dot--user { background: var(--mar); box-shadow: 0 0 0 7px rgba(38,121,190,0.25); }
+
+.map-popup-route {
+  display: inline-block; margin-top: 0.4rem;
+  background: var(--mar); color: #fff !important;
+  font-weight: 800; font-size: 0.78rem;
+  padding: 0.4rem 0.7rem; border-radius: 999px;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Contacto / footer
+   ========================================================================== */
+.contact-block p { color: var(--ink-dim); }
+.contact-block__meta { color: var(--ink); font-size: 0.9rem; font-weight: 700; }
+
+.site-footer { border-top: 2px solid var(--line); padding-block: 1.8rem; background: var(--cream-alt); }
+.site-footer__inner {
+  display: flex; flex-direction: column; gap: 1rem;
+  font-size: 0.82rem; color: var(--ink-dim);
+}
+.site-footer__row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; justify-content: space-between; }
+@media (min-width: 640px) {
+  .site-footer__inner { flex-direction: row; justify-content: space-between; align-items: center; }
+}

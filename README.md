@@ -1,65 +1,97 @@
-# Escala — Guía local de deporte, turismo y gastronomía
+# Escala Sucre — Guía departamental de deporte, turismo y gastronomía
 
-Borrador funcional (HTML + CSS + JS puro, sin frameworks ni build step) de una
-guía local que combina **horarios deportivos**, **lugares turísticos** y
-**comida típica** para tres destinos distintos, activados por **código QR**.
+Sitio estático (HTML + CSS + JS puro, sin frameworks ni build step) rediseñado
+con la identidad visual del **Plan de Desarrollo Departamental "Sucre, Tierra
+de Oportunidades" 2024–2027**: fondo crema, tipografía redondeada y festiva,
+y la paleta de 5 colores del logotipo (naranja sol, azul mar, verde monte,
+terracota y amarillo).
 
----
+## 1. Qué cambió respecto a la versión anterior
 
-## 1. Cómo funciona el flujo de QR
+- **Identidad visual**: de un tema oscuro tipo "boarding pass" a un fondo
+  crema cálido con tipografía **Baloo 2** (títulos) + **Nunito Sans** (cuerpo),
+  inspirado directamente en la portada del Plan de Desarrollo.
+- **Elemento firma**: los "bloques pinwheel", el patrón de cuadros de color
+  en diagonal de la portada, reutilizado en el logo, la portada de cada zona
+  y el footer.
+- **Contenido real**: las 3 zonas de ejemplo se reemplazaron por 3 zonas
+  reales de Sucre, con lugares, gastronomía y coordenadas verificadas por
+  búsqueda web (ver sección 4 para el detalle de fuentes y límites).
+- **Fotografía real**: cada zona tiene una foto de portada de Wikimedia
+  Commons con crédito visible, y un respaldo ilustrado (bloques de color)
+  si la imagen no carga.
+- **GPS → zona automática**: en móvil, si no hay zona guardada, el sitio
+  pide permiso de ubicación y redirige directo a la zona más cercana de
+  las tres (con botón para repetirlo manualmente en cualquier momento).
+- **Ruta al estadio**: cada evento deportivo tiene un botón
+  "🧭 Cómo llegar" que abre Google/Apple Maps con la ruta desde la
+  ubicación del usuario hasta el estadio de ese partido específico
+  (también disponible en todos los popups del mapa).
 
-Cada uno de los tres códigos QR físicos apunta a la misma página, pero con
-un parámetro distinto en la URL:
+## 2. Las 3 zonas
+
+| Zona | Municipios | Qué la define |
+|---|---|---|
+| 1 — Sincelejo | Sincelejo | Capital del departamento: corralejas, Plaza de Majagual, Estadio Arturo Cumplido Sierra (fútbol Dimayor y béisbol profesional) |
+| 2 — Golfo de Morrosquillo | Tolú y Coveñas | Malecón, playas certificadas y salida a las Islas de San Bernardo |
+| 3 — Montes de María | Ovejas y Colosó | Festival Nacional de Gaitas, Salto del Sereno, serranía verde |
+
+## 3. Cómo funciona el flujo de QR / GPS
+
+En el arranque (`js/main.js → init()`), la página resuelve la zona en este
+orden de prioridad:
+
+1. **Parámetro `?zona=` en la URL** (lo que trae el QR escaneado).
+2. **`localStorage`** con la última zona vista.
+3. **GPS automático** (solo en móvil, solo si no hay zona resuelta aún):
+   pide permiso de ubicación y abre directamente la zona más cercana,
+   calculada con la fórmula de Haversine sobre el centro de las 3 zonas.
+4. **Selector manual** ("Elige tu zona"), si el GPS no está disponible o
+   el usuario no da el permiso — siempre accesible desde el botón
+   "Cambiar zona" del header y desde "📍 Usar mi GPS" dentro del modal.
+
+## 4. Fuentes y límites conocidos de los datos
+
+Verificado por búsqueda web: nombres y descripciones de lugares turísticos,
+platos típicos, y coordenadas aproximadas de municipios y sitios (Wikipedia,
+Wikimedia Commons, medios colombianos de turismo, Colombia.co, Infobae).
+
+**Aún de ejemplo / a verificar antes de publicar:**
+- **Horarios de partidos** (`fecha`, `hora` en `js/data.js`): no existe una
+  fuente centralizada consultable para el calendario deportivo real de
+  cada equipo. Están marcados como "por confirmar" — conectar con
+  Dimayor / IMDER Sincelejo antes de imprimir los QR.
+- **Coordenadas de estadios y sitios puntuales**: son aproximaciones
+  razonables (a partir de direcciones y ubicación conocida), no
+  coordenadas GPS medidas en el sitio. Suficientes para un mapa de
+  referencia; conviene afinarlas con Google Maps antes de producción.
+
+## 5. Estructura de archivos
 
 ```
-https://iluui.github.io/sucre_governorate/?zona=1
-https://iluui.github.io/sucre_governorate/?zona=2
-https://iluui.github.io/sucre_governorate/?zona=3
-```
-
-En el arranque (`js/main.js → resolveZoneId()`), la página resuelve la zona
-en este orden de prioridad:
-
-1. **Parámetro `?zona=` en la URL** (lo que trae el QR escaneado). Tiene
-   siempre la última palabra: si alguien escanea otro QR, cambia de zona
-   aunque antes tuviera otra guardada.
-2. **`localStorage`** con la última zona vista, por si el usuario vuelve a
-   entrar sin volver a escanear (por ejemplo, reabre la pestaña).
-3. **Selector manual** (modal "Elige tu destino"), si no hay ninguna de las
-   dos anteriores o el parámetro no es válido.
-
-Esto significa que **no hace falta tres páginas distintas**: es un único
-sitio que se re-renderiza según la zona activa, lo cual facilita mantener
-una sola base de código para los tres destinos (y para los que se agreguen
-después).
-
-## 2. Estructura de archivos
-
-```
-web1/
+sucre_site/
 ├── index.html          # Estructura semántica de todas las secciones
-├── styles/
+├── css/
 │   └── style.css        # Sistema de diseño (tokens + componentes) responsive
-├── scripts/
-│   ├── data.js           # Datos de las 3 zonas (EDITAR AQUÍ para contenido real)
-│   └── main.js            # Lógica: resolución de zona, render, filtros, geo, mapa
+├── js/
+│   ├── data.js           # Datos de las 3 zonas (EDITAR AQUÍ para actualizar contenido)
+│   └── main.js            # Lógica: resolución de zona, GPS, render, filtros, mapa, rutas
 └── README.md
-└── requirements.txt
-└── .gitignore
 ```
 
 No hay build step. Se puede abrir `index.html` directamente o servirlo con
 cualquier servidor estático (Netlify, Vercel, GitHub Pages, Nginx, etc.).
 
-## 3. Cómo cargar datos reales
+## 6. Cómo actualizar el contenido
 
-Todo el contenido vive en un único objeto `ZONES` dentro de `js/data.js`.
-Cada zona tiene esta forma:
+Todo el contenido vive en `ZONES` dentro de `js/data.js`. Cada zona tiene:
 
 ```js
 "1": {
-  id, slug, nombre, nombreCorto, descripcion, colorAcento, coords, zoom,
-  deportes: [ { equipoLocal, equipoVisitante, deporte, fecha, hora, estadio, destacado } ],
+  id, slug, nombre, nombreCorto, apodo, descripcion, colorAcento,
+  coords, zoom, fotoUrl, fotoCredito,
+  deportes: [ { equipoLocal, equipoVisitante, deporte, fecha, hora,
+                estadio, estadioCoords, destacado, nota } ],
   turismo:  [ { nombre, descripcion, horario, interes, coords } ],
   comidaTipica: [ { nombre, descripcion } ],
   restaurantes: [ { nombre, tipo, especialidad, coords } ],
@@ -67,100 +99,47 @@ Cada zona tiene esta forma:
 }
 ```
 
-Para producción, el paso natural es **reemplazar `data.js` por una llamada a
-una API** (por ejemplo `fetch('/api/zonas/1')`) que devuelva el mismo
-formato de objeto. El resto del código (render, filtros, mapa) no necesita
-cambiar porque ya está desacoplado de la fuente de datos.
+`colorAcento` acepta `"sol"` (naranja), `"mar"` (azul) o `"monte"` (verde) —
+son las 3 variables de color definidas en `css/style.css`. El botón "Cómo
+llegar" de cada partido usa `estadioCoords`; si no se define, cae al centro
+de la zona (`coords`).
 
-Puntos de integración futuros ya identificados en el código:
-- Horarios deportivos → conectar a una API de resultados/calendarios (por
-  ejemplo, un proveedor de datos deportivos) en vez del array estático.
-- Coordenadas de eventos deportivos → en este borrador se aproximan con las
-  coordenadas del centro de la zona; en producción cada evento debería tener
-  sus propias coordenadas de estadio/recinto.
-- Reseñas de restaurantes → se puede añadir un campo `rating` sin tocar la
-  estructura general.
-
-## 4. Mapa interactivo
+## 7. Mapa interactivo y rutas
 
 - Librería: **Leaflet** + teselas de **OpenStreetMap**, cargadas por CDN.
-  No requiere API key, por lo que es apta para un borrador y también para
-  producción liviana (respetando la política de uso de OSM).
+  No requiere API key.
 - Marcadores diferenciados por color según categoría (deporte / turismo /
-  gastronomía), con capas independientes que se pueden mostrar/ocultar
-  desde los filtros de la sección "Mapa".
-- El marcador de usuario (azul) solo aparece si se concede el permiso de
-  geolocalización.
+  gastronomía), con capas independientes que se pueden mostrar/ocultar.
+- Cada marcador y cada tarjeta de partido incluye un enlace de ruta
+  (`https://www.google.com/maps/dir/?api=1&destination=...`), que abre la
+  app de mapas del teléfono y usa el GPS del dispositivo como origen
+  automáticamente — no requiere que el sitio tenga la ubicación del usuario.
 
-## 5. Geolocalización
+## 8. Geolocalización
 
-- Se solicita **solo cuando el usuario la pide explícitamente** (botón
-  "Usar mi ubicación" o "Ordenar por cercanía"), nunca automáticamente al
-  cargar la página — esto es intencional por buenas prácticas de permisos y
-  UX respetuosa.
+- **Detección automática de zona** (solo móvil, solo la primera vez): se
+  pide apenas se abre el sitio sin zona resuelta. Si se deniega, cae al
+  selector manual sin bloquear la navegación.
+- **Ordenar por cercanía** en Turismo y **"Usar mi ubicación"** en el mapa:
+  se piden solo cuando el usuario las activa explícitamente.
 - Estados manejados explícitamente: `requesting`, `ok`, `denied`,
-  `unsupported`, con mensaje visible en pantalla para cada uno
-  (`aria-live="polite"` para que lectores de pantalla lo anuncien).
-- Las distancias se calculan en el cliente con la fórmula de Haversine
-  (`main.js → haversineKm`), sin llamadas externas.
+  `unsupported`, con mensaje visible (`aria-live="polite"`).
+- Las distancias se calculan en el cliente con la fórmula de Haversine, sin
+  llamadas externas.
 
-## 6. Filtros implementados en este borrador
-
-- Deportes: Todos / Hoy / Esta semana.
-- Turismo: por nivel de interés + orden por cercanía (usa geolocalización).
-- Gastronomía / recomendaciones: por tipo de local (Restaurante, Cafetería,
-  Mercado).
-- Mapa: mostrar/ocultar cada capa de categoría.
-
-## 7. Accesibilidad
+## 9. Accesibilidad
 
 - Encabezados jerárquicos (`h1` único por página, `h2` por sección).
 - `skip link` al contenido principal.
 - Foco visible (`:focus-visible`) en todos los elementos interactivos.
-- Roles y `aria-*` en el modal (`role="dialog"`, `aria-modal`), en el estado
-  de geolocalización (`aria-live="polite"`) y en el contenedor del mapa.
-- Contraste calculado sobre fondo oscuro (`#10202E`) con texto claro
-  (`#EDEAE0`) y acentos suficientemente saturados para AA en texto grande.
-- `prefers-reduced-motion` respetado (desactiva animaciones/transiciones).
+- Roles y `aria-*` en el modal (`role="dialog"`, `aria-modal`), en los
+  estados de geolocalización y en el contenedor del mapa.
+- `prefers-reduced-motion` respetado.
 
-## 8. SEO básico
+## 10. Cómo agregar una cuarta zona
 
-- `<title>` dinámico por zona (`Escala — [nombre corto de la zona]`).
-- `meta description` y Open Graph base en `index.html` (a completar con
-  imagen y URL reales antes de publicar).
-- HTML semántico (`header`, `nav`, `main`, `section`, `footer`) con
-  `aria-labelledby` en cada sección apuntando a su propio `h2`.
-
-## 9. Rendimiento y buenas prácticas técnicas ya aplicadas
-
-- Mobile-first: todo el CSS parte de una columna y agrega columnas con
-  `min-width` media queries.
-- Sin frameworks pesados: HTML/CSS/JS vanilla + Leaflet (única dependencia
-  externa, cargada por CDN).
-- `scrollWheelZoom: false` en el mapa para no "atrapar" el scroll de la
-  página en móvil.
-- Separación estricta de responsabilidades: contenido (`data.js`), lógica
-  (`main.js`), presentación (`style.css`), estructura (`index.html`).
-- Componentes repetibles vía funciones de render (`renderDeportes`,
-  `renderTurismo`, etc.), listos para escalar a más zonas sin duplicar
-  código HTML.
-
-## 10. Cómo agregar una cuarta zona en el futuro
-
-1. Agregar un nuevo bloque `"4": { ... }` en `ZONES` dentro de `js/data.js`
-   con la misma forma que las otras tres.
-2. Agregar la tarjeta correspondiente aparecerá automáticamente en el
-   selector de destino (se genera dinámicamente desde `ZONES`).
-3. Generar un nuevo QR apuntando a `?zona=4`. No se requiere tocar HTML, CSS
-   ni la lógica de `main.js`.
-
-## 11. Limitaciones conocidas de este borrador (a resolver antes de producción)
-
-- Los datos son de ejemplo y no están verificados.
-- Las coordenadas de eventos deportivos usan el centro de la zona como
-  aproximación, no la ubicación real del recinto.
-- No hay backend ni panel de administración: todo el contenido se edita
-  directamente en `data.js`.
-- No se calculan rutas (solo distancia en línea recta); una integración de
-  rutas reales requeriría un servicio de enrutamiento (por ejemplo OSRM o
-  Google Directions).
+1. Agregar un nuevo bloque `"4": { ... }` en `ZONES` dentro de `js/data.js`.
+2. La tarjeta correspondiente aparece automáticamente en el selector y en
+   el cálculo de "zona más cercana" por GPS.
+3. Generar un nuevo QR apuntando a `?zona=4`. No se requiere tocar HTML,
+   CSS ni la lógica de `main.js`.

@@ -3,33 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Escala — Guía local de deporte, turismo y gastronomía</title>
-<meta name="description" content="Guía local que conecta horarios deportivos, lugares turísticos y comida típica de tu destino. Escanea el código QR de tu zona y arma tu plan del día." />
-<meta name="theme-color" content="#0E2230" />
+<title>Escala Sucre — Deporte, turismo y gastronomía</title>
+<meta name="description" content="Guía local de Sucre: horarios deportivos, lugares turísticos y comida típica de Sincelejo, el Golfo de Morrosquillo y los Montes de María. Escanea el código QR de tu zona." />
+<meta name="theme-color" content="#FBF5E6" />
 
-<!-- Open Graph (editar con imagen/URL reales antes de publicar) -->
-<meta property="og:title" content="Escala — Guía local de deporte, turismo y gastronomía" />
-<meta property="og:description" content="Deporte, turismo y comida típica de tu destino, en un solo lugar." />
+<meta property="og:title" content="Escala Sucre — Deporte, turismo y gastronomía" />
+<meta property="og:description" content="Deporte, turismo y comida típica de Sucre, en un solo lugar." />
 <meta property="og:type" content="website" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<link rel="stylesheet" href="styles/style.css" />
+<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
 <a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
 
-<!-- HEADER/NAV -->
+<!-- ====================== BANNER GPS ====================== -->
+<div class="geo-banner" data-geo-banner role="status" aria-live="polite" hidden></div>
+
+<!-- ====================== HEADER / NAV ====================== -->
 <header class="site-header" data-header>
   <div class="wrap site-header__inner">
-    <a href="#inicio" class="brand" aria-label="Escala — inicio">
-      <span class="brand__mark" aria-hidden="true">✦</span>
-      <span class="brand__name">Escala</span>
+    <a href="#inicio" class="brand" aria-label="Escala Sucre — inicio">
+      <div class="pinwheel" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <span class="brand__name">
+        <span>Escala</span> <span>Su</span><span>cr</span><span>e</span>
+        <span class="brand__sub">Guía departamental</span>
+      </span>
     </a>
 
     <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="nav-principal">
@@ -44,7 +49,7 @@
       <a href="#mapa">Mapa</a>
       <a href="#recomendaciones">Recomendaciones</a>
       <button type="button" class="btn btn--ghost btn--sm" data-open-zone-switcher>
-        Cambiar destino
+        Cambiar zona
       </button>
     </nav>
   </div>
@@ -52,55 +57,62 @@
 
 <main id="contenido-principal">
 
-  <!-- HERO -->
+  <!-- ====================== HERO / COVER ====================== -->
   <section class="hero" id="inicio" aria-labelledby="hero-title">
-    <div class="wrap hero__inner">
+    <div class="wrap">
 
-      <div class="ticket-stub hero__ticket" data-zone-ticket>
-        <div class="ticket-stub__row ticket-stub__row--top">
-          <span class="eyebrow" data-field="eyebrow">Guía de zona</span>
-          <span class="ticket-stub__code" data-field="codigo">QR · ZONA —</span>
+      <div class="cover-card" data-zone-ticket>
+        <div class="cover-card__photo" data-cover-photo></div>
+
+        <div class="cover-card__body">
+          <div class="cover-card__top">
+            <span class="eyebrow" data-field="eyebrow">Guía de zona</span>
+            <span class="hero__code" data-field="codigo">QR · ZONA —</span>
+          </div>
+
+          <p class="hero__apodo" data-field="zoneApodo">—</p>
+          <h1 class="hero__title" id="hero-title">
+            <span data-field="zoneName">—</span>
+            <span class="hero__title-accent" data-field="zoneDescripcion">—</span>
+          </h1>
+
+          <p class="hero__lede">
+            Esto es lo que hay hoy para ver, jugar y comer en tu zona del departamento de Sucre.
+          </p>
+
+          <div class="hero__divider" role="presentation"></div>
+
+          <div class="hero__actions">
+            <a href="#deportes" class="btn btn--accent">Ver horarios deportivos</a>
+            <a href="#mapa" class="btn btn--outline">Abrir mapa</a>
+          </div>
+
+          <p class="hero__hint">
+            <button type="button" class="link-btn" data-open-zone-switcher>¿No es tu destino? Cambiar zona</button>
+          </p>
         </div>
-
-        <h1 class="hero__title" id="hero-title">
-          Deporte, turismo y comida típica.
-          <span class="hero__title-accent">En el orden que los vas a vivir.</span>
-        </h1>
-
-        <p class="hero__lede">
-          Escaneaste el código de tu zona: <strong data-field="zoneName">—</strong>.
-          Esto es lo que hay hoy para ver, visitar y comer cerca de ti.
-        </p>
-
-        <div class="ticket-stub__divider" role="presentation">
-          <span class="ticket-stub__notch ticket-stub__notch--left" aria-hidden="true"></span>
-          <span class="ticket-stub__notch ticket-stub__notch--right" aria-hidden="true"></span>
-        </div>
-
-        <div class="hero__actions">
-          <a href="#deportes" class="btn btn--accent">Ver horarios deportivos</a>
-          <a href="#mapa" class="btn btn--outline">Abrir mapa</a>
-        </div>
-
-        <p class="hero__hint">
-          <button type="button" class="link-btn" data-open-zone-switcher>¿No es tu destino? Cambiar zona manualmente</button>
-        </p>
       </div>
 
     </div>
   </section>
 
-  <!-- SELECTOR DE DESTINO (modal) -->
+  <!-- ====================== SELECTOR DE DESTINO (modal) ====================== -->
   <div class="zone-switcher" data-zone-switcher hidden>
     <div class="zone-switcher__panel" role="dialog" aria-modal="true" aria-labelledby="zone-switcher-title">
       <div class="zone-switcher__head">
-        <h2 id="zone-switcher-title">Elige tu destino</h2>
+        <h2 id="zone-switcher-title">Elige tu zona en Sucre</h2>
         <button type="button" class="icon-btn" data-close-zone-switcher aria-label="Cerrar">✕</button>
       </div>
       <p class="zone-switcher__note">
-        Normalmente esta pantalla se salta automáticamente al escanear el QR de tu zona.
-        Úsala solo si necesitas cambiar de destino manualmente.
+        Normalmente esta pantalla se salta automáticamente al escanear el QR de tu zona,
+        o se detecta sola por GPS si abres desde el teléfono.
       </p>
+
+      <div class="zone-switcher__geo">
+        <p>¿Prefieres que te ubiquemos automáticamente?</p>
+        <button type="button" class="btn btn--map btn--sm" data-detect-zone>📍 Usar mi GPS</button>
+      </div>
+
       <div class="zone-switcher__list" data-zone-list>
         <!-- Tarjetas de zona generadas por JS -->
       </div>
@@ -108,7 +120,7 @@
     <div class="zone-switcher__backdrop" data-close-zone-switcher></div>
   </div>
 
-  <!-- EXPERIENCIAS DESTACADAS -->
+  <!-- ====================== EXPERIENCIAS DESTACADAS ====================== -->
   <section class="section section--tight" aria-labelledby="exp-title">
     <div class="wrap">
       <h2 class="section__title" id="exp-title">Planes de hoy</h2>
@@ -119,13 +131,15 @@
     </div>
   </section>
 
-  <!-- DEPORTES -->
+  <!-- ====================== DEPORTES ====================== -->
   <section class="section" id="deportes" aria-labelledby="deportes-title">
     <div class="wrap">
       <div class="section__head">
-        <span class="cat-badge cat-badge--deporte">Deporte</span>
-        <h2 class="section__title" id="deportes-title">Horarios deportivos</h2>
-        <p class="section__lede">Partidos y eventos de tu zona, ordenados por fecha.</p>
+        <div class="section__head-text">
+          <span class="cat-badge cat-badge--deporte">Deporte</span>
+          <h2 class="section__title" id="deportes-title">Horarios deportivos</h2>
+          <p class="section__lede">Partidos y eventos de tu zona, con ruta directa al estadio.</p>
+        </div>
       </div>
 
       <div class="filter-bar" role="group" aria-label="Filtrar eventos deportivos">
@@ -140,13 +154,15 @@
     </div>
   </section>
 
-  <!-- TURISMO -->
+  <!-- ====================== TURISMO ====================== -->
   <section class="section section--alt" id="turismo" aria-labelledby="turismo-title">
     <div class="wrap">
       <div class="section__head">
-        <span class="cat-badge cat-badge--turismo">Turismo</span>
-        <h2 class="section__title" id="turismo-title">Lugares turísticos</h2>
-        <p class="section__lede">Puntos de interés cerca de ti, con distancia estimada en tiempo real.</p>
+        <div class="section__head-text">
+          <span class="cat-badge cat-badge--turismo">Turismo</span>
+          <h2 class="section__title" id="turismo-title">Lugares turísticos</h2>
+          <p class="section__lede">Puntos de interés cerca de ti, con distancia estimada en tiempo real.</p>
+        </div>
       </div>
 
       <div class="filter-bar" role="group" aria-label="Filtrar lugares turísticos">
@@ -164,13 +180,15 @@
     </div>
   </section>
 
-  <!-- GASTRONOMÍA -->
+  <!-- ====================== GASTRONOMÍA ====================== -->
   <section class="section" id="gastronomia" aria-labelledby="gastronomia-title">
     <div class="wrap">
       <div class="section__head">
-        <span class="cat-badge cat-badge--comida">Gastronomía</span>
-        <h2 class="section__title" id="gastronomia-title">Comida típica</h2>
-        <p class="section__lede">Platos representativos de la zona.</p>
+        <div class="section__head-text">
+          <span class="cat-badge cat-badge--comida">Gastronomía</span>
+          <h2 class="section__title" id="gastronomia-title">Comida típica</h2>
+          <p class="section__lede">Platos representativos de la zona.</p>
+        </div>
       </div>
 
       <ul class="card-grid card-grid--dishes" data-comida-list>
@@ -179,12 +197,14 @@
     </div>
   </section>
 
-  <!-- MAPA -->
+  <!-- ====================== MAPA ====================== -->
   <section class="section section--alt" id="mapa" aria-labelledby="mapa-title">
     <div class="wrap">
       <div class="section__head">
-        <h2 class="section__title" id="mapa-title">Mapa de la zona</h2>
-        <p class="section__lede">Estadios, lugares turísticos y restaurantes, todo en un mismo mapa.</p>
+        <div class="section__head-text">
+          <h2 class="section__title" id="mapa-title">Mapa de la zona</h2>
+          <p class="section__lede">Estadios, lugares turísticos y restaurantes, todo en un mismo mapa. Toca cualquier punto para ver la ruta.</p>
+        </div>
       </div>
 
       <div class="filter-bar" role="group" aria-label="Filtrar capas del mapa">
@@ -202,12 +222,14 @@
     </div>
   </section>
 
-  <!-- RECOMENDACIONES -->
+  <!-- ====================== RECOMENDACIONES ====================== -->
   <section class="section" id="recomendaciones" aria-labelledby="recos-title">
     <div class="wrap">
       <div class="section__head">
-        <h2 class="section__title" id="recos-title">Dónde comer</h2>
-        <p class="section__lede">Restaurantes, mercados y cafeterías sugeridos para probar la comida típica.</p>
+        <div class="section__head-text">
+          <h2 class="section__title" id="recos-title">Dónde comer</h2>
+          <p class="section__lede">Restaurantes, mercados y fondas sugeridos para probar la comida típica.</p>
+        </div>
       </div>
 
       <div class="filter-bar" role="group" aria-label="Filtrar recomendaciones">
@@ -223,18 +245,18 @@
     </div>
   </section>
 
-  <!-- CONTACTO/INFO -->
+  <!-- ====================== CONTACTO / INFO ====================== -->
   <section class="section section--alt" id="contacto" aria-labelledby="contacto-title">
     <div class="wrap wrap--narrow contact-block">
       <h2 class="section__title" id="contacto-title">Información adicional</h2>
       <p>
-        Este es un borrador funcional de la guía. Los datos de deportes, turismo
-        y gastronomía de cada zona son de ficticios y se reemplazarán por
-        información real antes de publicar el sitio o imprimir los códigos QR.
+        Los lugares, la gastronomía y las coordenadas de esta guía están verificados con fuentes
+        públicas sobre el departamento de Sucre. Los horarios de partidos son de ejemplo y deben
+        confirmarse con Dimayor / IMDER Sincelejo antes de publicar el sitio o imprimir los códigos QR.
       </p>
       <p class="contact-block__meta">
         Zona activa: <strong data-field="zoneNameFooter">—</strong> ·
-        <button type="button" class="link-btn" data-open-zone-switcher>cambiar destino</button>
+        <button type="button" class="link-btn" data-open-zone-switcher>cambiar zona</button>
       </p>
     </div>
   </section>
@@ -243,13 +265,16 @@
 
 <footer class="site-footer">
   <div class="wrap site-footer__inner">
-    <span>© 2026 Escala — Primer Prototipo</span>
-    <span>Estructura pensada para agregar más zonas y códigos QR en el futuro.</span>
+    <div class="site-footer__row">
+      <div class="pinwheel" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <span>© 2026 Escala Sucre — borrador de proyecto, inspirado en la identidad del Plan de Desarrollo Departamental "Sucre, Tierra de Oportunidades".</span>
+    </div>
+    <span>Fotos: Wikimedia Commons, con crédito en cada zona. Mapa: OpenStreetMap.</span>
   </div>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="scripts/data.js"></script>
-<script src="scripts/main.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
