@@ -441,12 +441,98 @@
     });
   }
 
+  /* ------------------------------------------------------------------
+   * 11-b. Trazado de ruta sobre el propio mapa (OSRM, gratuito, sin API key)
+   * ------------------------------------------------------------------ */
+  let routeLayer = null;
+  let routeOriginMarker = null;
+
+  function clearRoute() {
+    if (routeLayer && state.map) { state.map.removeLayer(routeLayer); routeLayer = null; }
+    const box = document.querySelector("[data-route-info]");
+    if (box) box.hidden = true;
+  }
+
+  function showRouteInfo(distKm, durationMin, label) {
+    let box = document.querySelector("[data-route-info]");
+    if (!box) {
+      box = el(`<div class="route-info" data-route-info></div>`);
+      document.getElementById("map").parentElement.appendChild(box);
+    }
+    box.hidden = false;
+    box.innerHTML = `
+      <button class="route-info__close" data-route-close aria-label="Cerrar ruta">✕</button>
+      <strong>🚗 ${durationMin} min</strong>
+      <span>${distKm} km</span>
+      <span class="route-info__label">${label || ""}</span>
+    `;
+    box.querySelector("[data-route-close]").addEventListener("click", clearRoute);
+  }
+
+  // Dibuja la ruta real (siguiendo calles) entre state.userCoords y destino,
+  // usando el servidor demo público de OSRM. No requiere API key.
+  async function drawRoute(destCoords, label) {
+    if (!state.map) return;
+
+    if (!state.userCoords) {
+      showGeoBanner("📍 Necesitamos tu ubicación para trazar la ruta…");
+      requestGeolocation((coords, err) => {
+        hideGeoBanner();
+        if (coords) drawRoute(destCoords, label);
+      });
+      return;
+    }
+
+    const o = state.userCoords;
+    const url = `https://router.project-osrm.org/route/v1/driving/${o.lng},${o.lat};${destCoords.lng},${destCoords.lat}?overview=full&geometries=geojson`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.routes || !data.routes.length) throw new Error("Sin ruta disponible");
+
+      const route = data.routes[0];
+      const latlngs = route.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+
+      clearRoute();
+      routeLayer = L.polyline(latlngs, {
+        color: "#3b5bfd",
+        weight: 5,
+        opacity: 0.9,
+      }).addTo(state.map);
+
+      if (routeOriginMarker) state.map.removeLayer(routeOriginMarker);
+      routeOriginMarker = L.marker([o.lat, o.lng], { icon: dotIcon("map-marker-dot--user") })
+        .bindPopup("Tu ubicación")
+        .addTo(state.map);
+
+      state.map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
+
+      const km = (route.distance / 1000).toFixed(1);
+      const min = Math.round(route.duration / 60);
+      showRouteInfo(km, min, label);
+    } catch (e) {
+      setGeoStatus("No pudimos trazar la ruta en este momento. Intenta de nuevo.", "denied");
+    }
+  }
+
+  // Expuesta globalmente porque los popups de Leaflet se generan como
+  // cadenas HTML (ver initMap) y necesitan un manejador accesible desde
+  // el atributo onclick del botón.
+  window.__escalaTrazarRuta = function (lat, lng, label) {
+    drawRoute({ lat, lng }, label);
+  };
+
   function initMap() {
     const zone = getZone();
     const mapEl = document.getElementById("map");
     if (!mapEl || typeof L === "undefined") return;
 
     if (state.map) { state.map.remove(); state.map = null; }
+    routeLayer = null;
+    routeOriginMarker = null;
+    const routeBox = document.querySelector("[data-route-info]");
+    if (routeBox) routeBox.hidden = true;
 
     state.map = L.map(mapEl, { scrollWheelZoom: false }).setView([zone.coords.lat, zone.coords.lng], zone.zoom);
 
@@ -465,21 +551,27 @@
       const coords = ev.estadioCoords || zone.coords;
       const ruta = directionsUrl(coords, ev.estadio);
       L.marker([coords.lat, coords.lng], { icon: dotIcon("map-marker-dot--deporte") })
-        .bindPopup(`<strong>${ev.equipoLocal} vs ${ev.equipoVisitante}</strong><br>${ev.estadio}<br>${formatFecha(ev.fecha)} · ${ev.hora}<br><a class="map-popup-route" href="${ruta}" target="_blank" rel="noopener">🧭 Cómo llegar</a>`)
+        .bindPopup(`<strong>${ev.equipoLocal} vs ${ev.equipoVisitante}</strong><br>${ev.estadio}<br>${formatFecha(ev.fecha)} · ${ev.hora}<br>
+          <button class="map-popup-route" onclick="window.__escalaTrazarRuta(${coords.lat}, ${coords.lng}, '${ev.estadio.replace(/'/g, "\\'")}')">🧭 Trazar ruta</button>
+          <a class="map-popup-route map-popup-route--alt" href="${ruta}" target="_blank" rel="noopener">Abrir en Maps ↗</a>`)
         .addTo(state.mapLayers.deporte);
     });
 
     zone.turismo.forEach(t => {
       const ruta = directionsUrl(t.coords, t.nombre);
       L.marker([t.coords.lat, t.coords.lng], { icon: dotIcon("map-marker-dot--turismo") })
-        .bindPopup(`<strong>${t.nombre}</strong><br>${t.descripcion}<br><a class="map-popup-route" href="${ruta}" target="_blank" rel="noopener">🧭 Cómo llegar</a>`)
+        .bindPopup(`<strong>${t.nombre}</strong><br>${t.descripcion}<br>
+          <button class="map-popup-route" onclick="window.__escalaTrazarRuta(${t.coords.lat}, ${t.coords.lng}, '${t.nombre.replace(/'/g, "\\'")}')">🧭 Trazar ruta</button>
+          <a class="map-popup-route map-popup-route--alt" href="${ruta}" target="_blank" rel="noopener">Abrir en Maps ↗</a>`)
         .addTo(state.mapLayers.turismo);
     });
 
     zone.restaurantes.forEach(r => {
       const ruta = directionsUrl(r.coords, r.nombre);
       L.marker([r.coords.lat, r.coords.lng], { icon: dotIcon("map-marker-dot--comida") })
-        .bindPopup(`<strong>${r.nombre}</strong><br>${r.tipo} · ${r.especialidad}<br><a class="map-popup-route" href="${ruta}" target="_blank" rel="noopener">🧭 Cómo llegar</a>`)
+        .bindPopup(`<strong>${r.nombre}</strong><br>${r.tipo} · ${r.especialidad}<br>
+          <button class="map-popup-route" onclick="window.__escalaTrazarRuta(${r.coords.lat}, ${r.coords.lng}, '${r.nombre.replace(/'/g, "\\'")}')">🧭 Trazar ruta</button>
+          <a class="map-popup-route map-popup-route--alt" href="${ruta}" target="_blank" rel="noopener">Abrir en Maps ↗</a>`)
         .addTo(state.mapLayers.comida);
     });
 

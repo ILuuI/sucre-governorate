@@ -489,6 +489,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
    Mapa
    ========================================================================== */
 .map-frame {
+  position: relative;
   border-radius: var(--radius-lg); overflow: hidden;
   border: 2px solid var(--line-strong);
 }
@@ -505,11 +506,34 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 .map-marker-dot--user { background: var(--mar); box-shadow: 0 0 0 7px rgba(38,121,190,0.25); }
 
 .map-popup-route {
-  display: inline-block; margin-top: 0.4rem;
+  display: inline-block; margin-top: 0.4rem; margin-right: 0.4rem;
   background: var(--mar); color: #fff !important;
   font-weight: 800; font-size: 0.78rem;
   padding: 0.4rem 0.7rem; border-radius: 999px;
   text-decoration: none;
+  border: none; cursor: pointer; font-family: inherit;
+}
+.map-popup-route--alt {
+  background: transparent; color: var(--mar) !important;
+  box-shadow: inset 0 0 0 1.5px var(--mar);
+}
+
+/* Cajita flotante con distancia/tiempo de la ruta trazada, estilo Google Maps */
+.route-info {
+  position: absolute; z-index: 500;
+  top: 12px; left: 12px;
+  background: #fff; border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  box-shadow: 0 4px 14px rgba(38,32,26,0.22);
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.85rem; max-width: calc(100% - 24px);
+}
+.route-info strong { color: var(--mar); white-space: nowrap; }
+.route-info__label { color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.route-info__close {
+  border: none; background: var(--cream-alt); border-radius: 50%;
+  width: 22px; height: 22px; line-height: 1; cursor: pointer;
+  margin-left: auto; flex-shrink: 0;
 }
 
 /* ==========================================================================
