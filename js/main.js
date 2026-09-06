@@ -195,7 +195,6 @@
 
     filtered.forEach(ev => {
       const destino = ev.estadioCoords || zone.coords;
-      const ruta = directionsUrl(destino, ev.estadio);
       list.appendChild(el(`
         <li class="card card--deporte">
           <div class="card__top-row">
@@ -209,7 +208,7 @@
             <span>📍 ${ev.estadio}</span>
           </div>
           ${ev.nota ? `<p class="card__nota">${ev.nota}</p>` : ""}
-          <a class="card__route" href="${ruta}" target="_blank" rel="noopener">🧭 Cómo llegar al estadio</a>
+          <button class="card__route" onclick="window.__escalaVerRutaEnMapa(${destino.lat}, ${destino.lng}, '${ev.estadio.replace(/'/g, "\\'")}')">🧭 Cómo llegar al estadio</button>
         </li>
       `));
     });
@@ -436,9 +435,24 @@
     return L.divIcon({
       className: "",
       html: `<span class="map-marker-dot ${cls}"></span>`,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9],
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
     });
+  }
+
+  // Icono de "racimo": burbuja redonda con el color de la categoría y el
+  // número de puntos agrupados, usada cuando varios marcadores caen muy
+  // cerca entre sí (evita el efecto de manchas/óvalos superpuestos).
+  function clusterIcon(cat) {
+    return function (cluster) {
+      const count = cluster.getChildCount();
+      return L.divIcon({
+        html: `<span class="map-cluster map-cluster--${cat}">${count}</span>`,
+        className: "",
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+      });
+    };
   }
 
   /* ------------------------------------------------------------------
@@ -523,6 +537,20 @@
     drawRoute({ lat, lng }, label);
   };
 
+  // Usada por los botones "Cómo llegar" fuera del mapa (p. ej. tarjetas de
+  // deportes). Baja hasta la sección del mapa y traza ahí la ruta, en vez
+  // de abrir una app externa en otra pestaña.
+  window.__escalaVerRutaEnMapa = function (lat, lng, label) {
+    const mapSection = document.getElementById("mapa") || document.querySelector("[data-map]")?.closest("section");
+    if (mapSection) mapSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const attemptDraw = () => {
+      if (state.map) { drawRoute({ lat, lng }, label); }
+      else setTimeout(attemptDraw, 150); // el mapa puede tardar un instante en inicializarse
+    };
+    setTimeout(attemptDraw, 400); // deja que el scroll suave empiece antes de trazar
+  };
+
   function initMap() {
     const zone = getZone();
     const mapEl = document.getElementById("map");
@@ -542,9 +570,9 @@
     }).addTo(state.map);
 
     state.mapLayers = {
-      deporte: L.layerGroup().addTo(state.map),
-      turismo: L.layerGroup().addTo(state.map),
-      comida: L.layerGroup().addTo(state.map),
+      deporte: L.markerClusterGroup({ maxClusterRadius: 45, iconCreateFunction: clusterIcon("deporte") }).addTo(state.map),
+      turismo: L.markerClusterGroup({ maxClusterRadius: 45, iconCreateFunction: clusterIcon("turismo") }).addTo(state.map),
+      comida: L.markerClusterGroup({ maxClusterRadius: 45, iconCreateFunction: clusterIcon("comida") }).addTo(state.map),
     };
 
     zone.deportes.forEach(ev => {

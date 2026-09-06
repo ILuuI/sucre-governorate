@@ -453,6 +453,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
   font-weight: 800; font-size: 0.82rem;
   padding: 0.55rem 0.9rem; border-radius: 999px;
   text-decoration: none; width: fit-content;
+  border: none; cursor: pointer; font-family: inherit;
 }
 .card__route:hover { transform: translateY(-1px); }
 
@@ -497,13 +498,25 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 @media (min-width: 860px) { #map { height: 520px; } }
 
 .map-marker-dot {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(38,32,26,0.25);
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 3px solid #fff; box-shadow: 0 2px 6px rgba(38,32,26,0.4);
+  display: block;
 }
 .map-marker-dot--deporte { background: var(--cat-deporte); }
 .map-marker-dot--turismo { background: var(--cat-turismo); }
 .map-marker-dot--comida { background: var(--cat-comida); }
 .map-marker-dot--user { background: var(--mar); box-shadow: 0 0 0 7px rgba(38,121,190,0.25); }
+
+.map-cluster {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  color: #fff; font-weight: 800; font-size: 0.85rem;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(38,32,26,0.35);
+}
+.map-cluster--deporte { background: var(--cat-deporte); }
+.map-cluster--turismo { background: var(--cat-turismo); }
+.map-cluster--comida { background: var(--cat-comida); }
 
 .map-popup-route {
   display: inline-block; margin-top: 0.4rem; margin-right: 0.4rem;
