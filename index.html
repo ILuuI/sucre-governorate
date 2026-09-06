@@ -216,6 +216,20 @@
         <button class="chip chip--accent" data-geo-locate>📍 Usar mi ubicación</button>
       </div>
 
+      <form class="manual-location" data-manual-location-form>
+        <label for="manual-location-input" class="manual-location__label">¿El GPS falla? Escribe tu dirección o barrio:</label>
+        <div class="manual-location__row">
+          <input
+            type="text"
+            id="manual-location-input"
+            data-manual-location-input
+            placeholder="Ej: Carrera 15 con Calle 20, Sincelejo"
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn--map">Buscar</button>
+        </div>
+      </form>
+
       <p class="geo-status" data-geo-status-map role="status" aria-live="polite"></p>
 
       <div class="map-frame">

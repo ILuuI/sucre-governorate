@@ -486,6 +486,26 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 .geo-status[data-state="denied"] { color: var(--terracota); }
 .geo-status[data-state="ok"] { color: var(--monte); }
 
+.manual-location { margin: 0.4rem 0 1rem; }
+.manual-location__label {
+  display: block; font-size: 0.82rem; color: var(--ink-dim);
+  margin-bottom: 0.4rem;
+}
+.manual-location__row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.manual-location__row input {
+  flex: 1 1 240px; min-width: 0;
+  padding: 0.6rem 0.9rem; border-radius: 999px;
+  border: 2px solid var(--line-strong); background: #fff;
+  font-family: inherit; font-size: 0.9rem; color: var(--ink);
+}
+.manual-location__row input:focus {
+  outline: none; border-color: var(--mar);
+}
+.manual-location__row .btn--map {
+  border-radius: 999px; padding: 0.6rem 1.1rem;
+  font-weight: 800; font-size: 0.85rem; border: none; cursor: pointer;
+}
+
 /* ==========================================================================
    Mapa
    ========================================================================== */
