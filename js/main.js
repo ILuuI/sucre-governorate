@@ -428,55 +428,6 @@
     );
   }
 
-  // Búsqueda manual de dirección cuando el GPS falla o da una ubicación
-  // incorrecta. Usa Nominatim (geocodificador gratuito de OpenStreetMap,
-  // sin API key), acotado al departamento de Sucre para evitar resultados
-  // de otras partes del país/mundo con nombres de calle similares.
-  async function geocodeAddress(query) {
-    const bounded = `${query}, Sucre, Colombia`;
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=co&q=${encodeURIComponent(bounded)}`;
-    const res = await fetch(url, { headers: { "Accept-Language": "es" } });
-    const results = await res.json();
-    if (!results.length) return null;
-    return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon), label: results[0].display_name };
-  }
-
-  function bindManualLocationForm() {
-    const form = document.querySelector("[data-manual-location-form]");
-    const input = document.querySelector("[data-manual-location-input]");
-    if (!form || !input) return;
-
-    form.addEventListener("submit", async (ev) => {
-      ev.preventDefault();
-      const query = input.value.trim();
-      if (!query) return;
-
-      showGeoBanner("🔎 Buscando esa dirección…");
-      setGeoStatus("Buscando la dirección escrita…", "requesting");
-
-      try {
-        const found = await geocodeAddress(query);
-        if (!found) {
-          hideGeoBanner();
-          setGeoStatus("No encontramos esa dirección en Sucre. Intenta con otro nombre de calle o barrio.", "denied");
-          return;
-        }
-        state.userCoords = { lat: found.lat, lng: found.lng };
-        state.geoStatus = "ok";
-        hideGeoBanner();
-        setGeoStatus(`Ubicación establecida manualmente cerca de "${query}".`, "ok");
-        renderTurismo();
-        if (state.map) {
-          placeUserMarker();
-          state.map.setView([found.lat, found.lng], 15);
-        }
-      } catch (e) {
-        hideGeoBanner();
-        setGeoStatus("No pudimos buscar esa dirección en este momento. Intenta de nuevo.", "denied");
-      }
-    });
-  }
-
   /* ------------------------------------------------------------------
    * 11. Mapa (Leaflet + OpenStreetMap)
    * ------------------------------------------------------------------ */
@@ -784,9 +735,6 @@
 
     // Botón "usar mi ubicación" (mapa)
     document.querySelector("[data-geo-locate]").addEventListener("click", () => requestGeolocation());
-
-    // Búsqueda manual de dirección (respaldo cuando el GPS falla)
-    bindManualLocationForm();
   }
 
   /* ------------------------------------------------------------------
